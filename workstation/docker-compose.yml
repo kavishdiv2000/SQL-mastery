@@ -1,0 +1,82 @@
+# SQL Mastery workstation
+#   mysql   - MySQL 8.4 LTS, auto-seeded with the ShopCo practice data
+#   adminer - lightweight web GUI for browsing the database
+#   app     - the SQL Mastery learning app (playbook, practice, console, lab)
+#
+# Everything binds to 127.0.0.1 only, so nothing is exposed to your network.
+
+name: sql-mastery
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: sqlm-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpass}
+      MYSQL_DATABASE: shopdb
+      MYSQL_USER: learner          # fixed name: 00-users-and-grants.sql grants to it
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-learnerpass}
+      TZ: UTC
+    # Server options are passed on the command line rather than via a mounted
+    # my.cnf, because MySQL ignores world-writable config files (which is how
+    # Windows bind mounts appear inside the container).
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_0900_ai_ci
+      - --skip-log-bin                          # no binlog needed for learning
+      - --log-bin-trust-function-creators=1     # allow CREATE FUNCTION / TRIGGER without SUPER
+      - --local-infile=1                        # allow LOAD DATA LOCAL INFILE experiments
+      - --max-execution-time=0
+    ports:
+      - "127.0.0.1:${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      # The init scripts run on a temporary server without TCP networking, so
+      # this only succeeds once seeding has finished and the real server is up.
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+
+  adminer:
+    image: adminer:latest
+    container_name: sqlm-adminer
+    restart: unless-stopped
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+    ports:
+      - "127.0.0.1:${ADMINER_PORT:-8081}:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  app:
+    build: ../app
+    container_name: sqlm-app
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USER: learner
+      DB_PASSWORD: ${MYSQL_PASSWORD:-learnerpass}
+      PLAYBOOK_DIR: /content/playbook
+      LAB_DIR: /content/lab
+      SEED_DIR: /content/seed
+    volumes:
+      # Mounted (not copied) so edits to the playbook, lab or your answer sheet show up live
+      - ../playbook:/content/playbook:ro
+      - ../lab:/content/lab:ro
+      - ./mysql/init:/content/seed:ro
+    ports:
+      - "127.0.0.1:${APP_PORT:-3000}:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

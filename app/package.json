@@ -1,0 +1,20 @@
+{
+  "name": "sql-mastery-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Interactive SQL learning app: playbook, graded practice, SQL console and lab assessment on MySQL 8",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "grade-lab": "node scripts/grade-lab.js",
+    "verify": "node scripts/verify-content.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "marked": "^12.0.2",
+    "mysql2": "^3.11.5"
+  }
+}

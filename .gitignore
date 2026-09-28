@@ -1,0 +1,5 @@
+node_modules/
+workstation/.env
+workstation/backups/
+*.log
+.DS_Store

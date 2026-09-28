@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL Mastery</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><ellipse cx='16' cy='7' rx='11' ry='4' fill='%233b82f6'/><path d='M5 7v18c0 2.2 4.9 4 11 4s11-1.8 11-4V7' fill='none' stroke='%233b82f6' stroke-width='2.5'/><path d='M5 16c0 2.2 4.9 4 11 4s11-1.8 11-4' fill='none' stroke='%233b82f6' stroke-width='2.5'/></svg>">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <a class="brand" href="#/dashboard">
+        <span class="brand-mark">SQL</span>
+        <span class="brand-text">Mastery</span>
+      </a>
+      <nav class="nav">
+        <a href="#/dashboard" data-route="dashboard">Dashboard</a>
+        <a href="#/playbook" data-route="playbook">Playbook</a>
+        <a href="#/practice" data-route="practice">Practice</a>
+        <a href="#/console" data-route="console">SQL Console</a>
+        <a href="#/lab" data-route="lab">Lab Assessment</a>
+        <a href="#/settings" data-route="settings">Settings</a>
+      </nav>
+      <div class="sidebar-foot">
+        <div class="progress-label"><span>Practice progress</span><span id="progress-count">0/0</span></div>
+        <div class="progress-bar"><div id="progress-fill"></div></div>
+        <div id="db-status" class="db-status">Checking database…</div>
+      </div>
+    </aside>
+    <main id="view" class="view" tabindex="-1"></main>
+  </div>
+  <script src="er-diagram.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
